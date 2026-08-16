@@ -28,13 +28,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
             background: var(--bg-gradient);
             font-family: 'Quicksand', sans-serif;
             color: var(--text-color);
             overflow: hidden;
-            width: 100vw;
+            width: 100%;
             height: 100vh;
+            height: 100dvh; /* use dynamic viewport height on mobile so the browser UI doesn't clip content */
         }
 
         /* --- AUDIO BUTTON --- */
@@ -60,7 +61,9 @@
         .scene {
             position: absolute;
             top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -69,6 +72,8 @@
             visibility: hidden;
             transition: opacity 1.5s ease-in-out, visibility 1.5s;
             z-index: 10;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .scene.active {
             opacity: 1;
@@ -163,7 +168,7 @@
 
         /* --- SCENE 3: SCRAPBOOK CONTAINER --- */
         .scrapbook-wrapper {
-            width: 100vw; height: 100vh;
+            width: 100%; min-height: 100%;
             display: flex; justify-content: center; align-items: center;
             padding: 10px;
         }
@@ -171,6 +176,7 @@
             width: 95%; 
             max-width: 950px;
             height: 90vh;
+            height: 90dvh;
             max-height: 800px;
             background: var(--scrapbook-bg);
             border-radius: 20px;
@@ -261,42 +267,59 @@
             #post-pop-content p { font-size: 1.1rem; }
             .envelope-wrapper { transform: scale(0.9); }
 
-            /* Rearrange Scrapbook Layout for Mobile */
+            /* Let the scrapbook grow naturally with its content and scroll
+               within the scene instead of being squeezed/clipped into one screen */
+            .scrapbook-wrapper {
+                align-items: flex-start;
+                padding: 20px 12px 90px; /* extra bottom room so the music button never covers content */
+            }
             .scrapbook {
                 display: flex;
                 flex-direction: column;
-                height: 95vh;
-                padding: 20px 15px;
-                gap: 30px;
+                width: 100%;
+                height: auto;
+                max-height: none;
+                min-height: 0;
+                padding: 24px 18px;
+                gap: 22px;
+                overflow: visible;
             }
             .center-col {
                 order: 1; /* Moves the wish text to the top */
                 height: auto;
-                padding: 10px 0;
+                padding: 0;
             }
-            .center-col h1 { font-size: 3rem; }
-            .center-col p { font-size: 1rem; }
-            
+            .center-col h1 { font-size: 2.4rem; }
+            .center-col p { font-size: 1rem; margin-bottom: 12px; }
+            .center-col .sign-off { font-size: 2rem; margin-top: 10px; }
+
             .photo-col {
                 order: 2; /* Moves photos beneath the text */
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 15px;
+                gap: 14px;
                 height: auto;
             }
+            .photo-col:last-of-type { order: 3; }
             .polaroid {
-                width: 45%; /* Places photos nicely in a 2-column grid */
-                max-width: 180px;
-                height: 200px;
+                width: calc(50% - 7px); /* two photos per row, no overflow */
+                max-width: 170px;
+                height: 190px;
             }
         }
 
         @media (max-width: 400px) {
             /* Extra adjustments for very small phones */
             .envelope-wrapper { transform: scale(0.8); }
-            .center-col h1 { font-size: 2.5rem; }
-            .polaroid { width: 100%; max-width: 220px; height: 230px; }
+            .center-col h1 { font-size: 2rem; }
+            .center-col p { font-size: 0.95rem; }
+            .polaroid { width: calc(50% - 6px); max-width: 150px; height: 160px; }
+        }
+
+        @media (max-width: 340px) {
+            /* Single-column photos on very narrow phones */
+            .polaroid { width: 70%; max-width: 220px; height: 190px; }
         }
     </style>
 </head>
@@ -385,21 +408,43 @@
         let isPlaying = true; 
         musicBtn.textContent = '🔊';
 
-        music.play().catch(e => {
-            console.log("Audio autoplay prevented by browser");
-            isPlaying = false;
-            musicBtn.textContent = '🔇';
-        });
+        function tryPlayMusic() {
+            music.play().then(() => {
+                isPlaying = true;
+                musicBtn.textContent = '🔊';
+            }).catch(e => {
+                console.log("Audio autoplay prevented by browser");
+                isPlaying = false;
+                musicBtn.textContent = '🔇';
+            });
+        }
+
+        tryPlayMusic();
+
+        // Most mobile browsers block autoplay with sound until the user interacts
+        // with the page. Catch the very first tap/click/keypress anywhere and use
+        // it to start the music, so it plays by default without needing the button.
+        function unlockMusicOnFirstInteraction(e) {
+            if (e.target === musicBtn) return; // don't override a manual mute/unmute tap
+            if (!isPlaying) tryPlayMusic();
+            document.removeEventListener('click', unlockMusicOnFirstInteraction);
+            document.removeEventListener('touchstart', unlockMusicOnFirstInteraction);
+            document.removeEventListener('keydown', unlockMusicOnFirstInteraction);
+        }
+        document.addEventListener('click', unlockMusicOnFirstInteraction, { once: true });
+        document.addEventListener('touchstart', unlockMusicOnFirstInteraction, { once: true });
+        document.addEventListener('keydown', unlockMusicOnFirstInteraction, { once: true });
 
         function toggleMusic() {
             if (isPlaying) {
                 music.pause();
                 musicBtn.textContent = '🔇';
+                isPlaying = false;
             } else {
                 music.play().catch(e => console.log("Audio autoplay prevented"));
                 musicBtn.textContent = '🔊';
+                isPlaying = true;
             }
-            isPlaying = !isPlaying;
         }
 
         // --- SCENE 1 TIMING ---
