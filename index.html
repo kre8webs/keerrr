@@ -86,8 +86,8 @@
             opacity: 1;
             transform: translateY(0);
         }
-        .message-text { font-size: 2.5rem; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 3px rgba(255,255,255,0.7); color: #d81159; }
-        .sub-text { font-size: 1.2rem; text-align: center; color: #555; font-weight: 600; }
+        .message-text { font-size: 2.5rem; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 3px rgba(255,255,255,0.7); color: #d81159; padding: 0 15px; }
+        .sub-text { font-size: 1.2rem; text-align: center; color: #555; font-weight: 600; padding: 0 15px; }
 
         /* --- SCENE 1: BALLOON --- */
         .balloon-container { margin: 40px 0; cursor: pointer; animation: float 3s ease-in-out infinite; }
@@ -97,6 +97,7 @@
             border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
             box-shadow: inset -10px -10px 0 rgba(0,0,0,0.07);
             position: relative;
+            margin: 0 auto;
         }
         .balloon::before {
             content: ""; position: absolute; bottom: -50px; left: 50%;
@@ -119,7 +120,7 @@
             opacity: 0; pointer-events: none;
             transition: opacity 1s ease-in-out;
         }
-        #post-pop-content.show { opacity: 1; }
+        #post-pop-content.show { opacity: 1; pointer-events: auto; }
         #post-pop-content h1 { font-size: 3.5rem; color: #d81159; margin-bottom: 15px; }
         #post-pop-content p { font-size: 1.2rem; line-height: 1.6; font-weight: 600; }
 
@@ -164,10 +165,13 @@
         .scrapbook-wrapper {
             width: 100vw; height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            padding: 10px;
         }
         .scrapbook {
-            width: 950px; 
-            height: 800px;
+            width: 95%; 
+            max-width: 950px;
+            height: 90vh;
+            max-height: 800px;
             background: var(--scrapbook-bg);
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05);
@@ -176,9 +180,10 @@
             grid-template-columns: 220px 1fr 220px;
             gap: 20px;
             position: relative;
-            transform-origin: center;
             border: 2px solid rgba(255, 192, 203, 0.5);
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23fbc2eb' fill-opacity='0.15' fill-rule='evenodd'/%3E%3C/svg%3E");
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* Center Column - Wish */
@@ -245,6 +250,53 @@
         }
         @keyframes floatUp {
             to { transform: translateY(-110vh) rotate(360deg); }
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES (MOBILE FIXES) --- */
+        @media (max-width: 900px) {
+            /* Fix Scene 1 and Scene 2 Text Sizes for Mobile */
+            .message-text { font-size: 2rem !important; }
+            #scene2-intro { font-size: 2.2rem; }
+            #post-pop-content h1 { font-size: 2.5rem !important; }
+            #post-pop-content p { font-size: 1.1rem; }
+            .envelope-wrapper { transform: scale(0.9); }
+
+            /* Rearrange Scrapbook Layout for Mobile */
+            .scrapbook {
+                display: flex;
+                flex-direction: column;
+                height: 95vh;
+                padding: 20px 15px;
+                gap: 30px;
+            }
+            .center-col {
+                order: 1; /* Moves the wish text to the top */
+                height: auto;
+                padding: 10px 0;
+            }
+            .center-col h1 { font-size: 3rem; }
+            .center-col p { font-size: 1rem; }
+            
+            .photo-col {
+                order: 2; /* Moves photos beneath the text */
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+                height: auto;
+            }
+            .polaroid {
+                width: 45%; /* Places photos nicely in a 2-column grid */
+                max-width: 180px;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            /* Extra adjustments for very small phones */
+            .envelope-wrapper { transform: scale(0.8); }
+            .center-col h1 { font-size: 2.5rem; }
+            .polaroid { width: 100%; max-width: 220px; height: 230px; }
         }
     </style>
 </head>
@@ -328,32 +380,27 @@
         const music = document.getElementById('bg-music');
         const sfxPop = document.getElementById('sfx-pop');
         const sfxEnvelope = document.getElementById('sfx-envelope');
-       const musicBtn = document.getElementById('music-btn');
+        const musicBtn = document.getElementById('music-btn');
 
-// 1. Set the initial state to true
-let isPlaying = true; 
-
-// 2. Set the initial button text to the "playing" icon
-musicBtn.textContent = '🔊';
-
-// 3. Attempt to play the music automatically when the page loads
-music.play().catch(e => {
-    console.log("Audio autoplay prevented by browser");
-    // If the browser blocks autoplay, revert the state so the button works correctly
-    isPlaying = false;
-    musicBtn.textContent = '🔇';
-});
-
-function toggleMusic() {
-    if (isPlaying) {
-        music.pause();
-        musicBtn.textContent = '🔇';
-    } else {
-        music.play().catch(e => console.log("Audio autoplay prevented"));
+        let isPlaying = true; 
         musicBtn.textContent = '🔊';
-    }
-    isPlaying = !isPlaying;
-}
+
+        music.play().catch(e => {
+            console.log("Audio autoplay prevented by browser");
+            isPlaying = false;
+            musicBtn.textContent = '🔇';
+        });
+
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.textContent = '🔇';
+            } else {
+                music.play().catch(e => console.log("Audio autoplay prevented"));
+                musicBtn.textContent = '🔊';
+            }
+            isPlaying = !isPlaying;
+        }
 
         // --- SCENE 1 TIMING ---
         setTimeout(() => {
@@ -372,7 +419,6 @@ function toggleMusic() {
 
         // --- BALLOON POP ---
         function popBalloon() {
-            // Play Pop SFX
             sfxPop.currentTime = 0;
             sfxPop.play().catch(e => console.log("SFX autoplay prevented by browser"));
 
@@ -395,7 +441,6 @@ function toggleMusic() {
             if(element.classList.contains('open')) return;
             element.classList.add('open');
             
-            // Play Envelope SFX
             sfxEnvelope.currentTime = 0;
             sfxEnvelope.play().catch(e => console.log("SFX autoplay prevented by browser"));
             
@@ -410,19 +455,6 @@ function toggleMusic() {
             }, 3000);
         }
 
-        // --- MOBILE SCALING LOGIC ---
-        function resizeScrapbook() {
-            const scrapbook = document.getElementById('scrapbook-card');
-            const baseW = 950;
-            const baseH = 800;
-            const vw = window.innerWidth - 20;
-            const vh = window.innerHeight - 20;
-            
-            const scale = Math.min(vw / baseW, vh / baseH, 1);
-            scrapbook.style.transform = `scale(${scale})`;
-        }
-        window.addEventListener('resize', resizeScrapbook);
-        resizeScrapbook(); 
 
         // --- SCRAPBOOK ANIMATIONS ---
         function startScrapbookAnimation() {
